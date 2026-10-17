@@ -1,0 +1,3 @@
+nicotin
+flask
+gunicorn
