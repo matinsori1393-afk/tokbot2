@@ -1,22 +1,10 @@
 from nicotin import Client, filters
-from flask import Flask
-import threading
-import os
 
 TOKEN = "CGHDBG0GPEBTDACIEDRKLPQXIVFHAAOQUBVSGFYJSFEJKDAVMSIVFSOXMKTBJBKD"
 JOIN_LINK = "https://rubika.ir/Linkdnoni_Parsi"
 ADMIN_CHAT = None
 
 app = Client(bot_token=TOKEN)
-web = Flask(name)
-
-@web.route('/')
-def health():
-    return "OK"
-
-def run_web():
-    port = int(os.environ.get("PORT", 8080))
-    web.run(host='0.0.0.0', port=port)
 
 @app.on_message(filters.command("start"))
 async def start(client, message):
@@ -24,7 +12,7 @@ async def start(client, message):
     chat_id = message.chat_id
     if not ADMIN_CHAT:
         ADMIN_CHAT = chat_id
-        await message.reply("✅ ثبت شد! از این به بعد لینک‌ها برات میاد.")
+        await message.reply("✅ ثبت شد!")
         return
     await message.reply(f"سلام!\n\nاول توی کانال ما عضو شو:\n{JOIN_LINK}\n\nبعد لینکت رو بفرست.")
 
@@ -33,16 +21,16 @@ async def handler(client, message):
     global ADMIN_CHAT
     text = message.text
     chat_id = message.chat_id
+    user = getattr(message, 'from_user', None)
+    uid = getattr(user, 'id', None) if user else None
     if not text or text.startswith("/"):
         return
     if ADMIN_CHAT and str(chat_id) == str(ADMIN_CHAT):
         return
     if ADMIN_CHAT:
-        await client.send_message(ADMIN_CHAT, f"📥 لینک جدید:\nمتن: {text}\nاز چت: {chat_id}")
-        await message.reply("✅ لینکت ثبت شد. منتظر تایید ادمین باش.")
+        await client.send_message(ADMIN_CHAT, f"📥 لینک جدید:\nآیدی کاربر: {uid}\nGUID چت: {chat_id}\nمتن: {text}")
+        await message.reply("✅ لینکت ثبت شد.")
     else:
         await message.reply("⚠️ ادمین هنوز ربات رو تنظیم نکرده.")
-
-threading.Thread(target=run_web, daemon=True).start()
 
 app.run()
