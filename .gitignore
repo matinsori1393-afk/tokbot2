@@ -1,0 +1,4 @@
+*.pyrubi
+*.session
+*.db
+__pycache__/
